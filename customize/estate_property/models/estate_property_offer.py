@@ -1,6 +1,6 @@
 from odoo import fields, models, api
 from datetime import date, timedelta
-
+from odoo.exceptions import UserError
 
 class EstatePropertyOffer(models.Model):
     _name = 'estate.property.offer'
@@ -43,3 +43,15 @@ class EstatePropertyOffer(models.Model):
         for property in self:
             if property.date_deadline:
                 property.validity = (property.date_deadline - date.today()).days
+
+    def act_offer_accepted(self):
+        for record in self:
+            record.property_id.partner_id = record.partner_id
+            record.property_id.selling_price = record.price
+            record.status = 'accepted'
+            record.property_id.state = 'offer_accepted'
+
+
+    def act_offer_refused(self):
+        for record in self:
+            pass

@@ -1,8 +1,10 @@
 from odoo import fields, models, api
 import logging # Import modul logging
 from dateutil.relativedelta import relativedelta # Import relativedelta
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__) # Inisialisasi logger untuk debugging
+
 
 class EstateProperty(models.Model):
     _name = 'estate.property'
@@ -106,4 +108,18 @@ class EstateProperty(models.Model):
         for property in self:
             if property.garden:
                 property.garden_orientation = 'north'
-                property.garden_area = 10
+                property.garden_area = 50
+
+    def act_btn_sold(self):
+        for record in self:
+            if record.state == 'canceled':
+                raise UserError('Property has been cancelled')
+            else:
+                record.state = 'sold'
+
+    def act_btn_cancel(self):
+        for record in self:
+            if record.state == 'sold':
+                raise UserError('Property has been sold')
+            else:
+                record.state = 'canceled'
