@@ -1,7 +1,8 @@
 from odoo import fields, models, api
 import logging # Import modul logging
 from dateutil.relativedelta import relativedelta # Import relativedelta
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError,ValidationError
+import odoo.tools.float_utils
 
 _logger = logging.getLogger(__name__) # Inisialisasi logger untuk debugging
 
@@ -89,12 +90,25 @@ class EstateProperty(models.Model):
         compute='_compute_best_price',
         required=False)
 
+
+    _sql_constraints = [
+        ('check_expected_price_is_positive', 'CHECK(expected_price > 0.0)', 'The expected price must be a positive number!'),
+        ('check_selling_is_positive', 'CHECK(selling_price > 0.0)', 'The selling price must be a positive number!')
+    ]
+
+    @api.constrains('selling_price')
+    def _check_selling_price_constraint(self):
+        for record in self:
+            percentage = abs(record.selling_price / record.expected_price) * 100
+            if percentage <= 80:
+                raise ValidationError("The selling price cannot be under 90% of the expected price!")
+
     @api.depends('living_area','garden_area')
     def _compute_total_area(self):
         for property in self:
             property.total_area = property.living_area + property.garden_area
 
-    @api.depends('offer_ids.price') # Dependensi pada field 'price' dari offer_ids
+    @api.depends('offer_ids.price')
     def _compute_best_price(self):
         for property_record in self:
             prices = property_record.offer_ids.mapped('price')

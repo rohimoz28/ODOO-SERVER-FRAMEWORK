@@ -1,6 +1,6 @@
 from odoo import fields, models, api
 from datetime import date, timedelta
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 class EstatePropertyOffer(models.Model):
     _name = 'estate.property.offer'
@@ -32,6 +32,14 @@ class EstatePropertyOffer(models.Model):
         inverse='_inverse_date_deadline',
         compute='_compute_date_deadline',
         required=False)
+
+    # validasi negative price tidak bisa menggunakan _sql_constrains
+    # mungkin dikarenakan insert child dari parent
+    @api.constrains('price')
+    def _check_price(self):
+        for record in self:
+            if record.price <= 0:
+                raise ValidationError("The offered price cannot negative!")
 
     @api.depends('validity')
     def _compute_date_deadline(self):
