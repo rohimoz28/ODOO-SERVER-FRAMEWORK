@@ -1,0 +1,41 @@
+services:
+  odoo-demo:
+    image: custom-odoo:17.0
+    container_name: odoo-demo
+    command: >
+      /bin/sh -c "exec odoo -c /etc/odoo/odoo.conf --dev=reload,xml,qweb"
+    ports:
+      - "8069:8069"
+    depends_on:
+      - postgres-demo
+    volumes:
+      - odoo-data-demo:/var/lib/odoo
+      - ./odoo.conf:/etc/odoo/odoo.conf
+      - ./customize:/mnt/addons
+    networks:
+      - demo_odoo_network
+
+  postgres-demo:
+    image: postgres:16-alpine
+    container_name: postgres-demo
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    ports:
+      - "5433:5432"
+    volumes:
+      - odoo-db-demo:/var/lib/postgresql/data
+    networks:
+      - demo_odoo_network
+
+volumes:
+  odoo-data-demo:
+    name: odoo-data-demo
+  odoo-db-demo:
+    name: odoo-db-demo
+
+networks:
+  demo_odoo_network:
+    name: demo_odoo_network
+    driver: bridge
