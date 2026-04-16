@@ -23,6 +23,8 @@ Real Estate Property Module
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'views/menu_view.xml',
+        'views/estate_property_view.xml',
         # 'views/views.xml',
         # 'views/templates.xml',
     ],
