@@ -1,6 +1,8 @@
 from odoo import fields, models, api
-from dateutil.relativedelta import relativedelta
+import logging # Import modul logging
+from dateutil.relativedelta import relativedelta # Import relativedelta
 
+_logger = logging.getLogger(__name__) # Inisialisasi logger untuk debugging
 
 class EstateProperty(models.Model):
     _name = 'estate.property'
@@ -41,6 +43,7 @@ class EstateProperty(models.Model):
         required=False)
     garden = fields.Boolean(
         string='Garden',
+        onchange='_onchange_garden',
         required=False)
     garden_area = fields.Integer(
         string='Garden Area',
@@ -75,3 +78,32 @@ class EstateProperty(models.Model):
         inverse_name='property_id',
         string='Offer',
         required=False)
+    total_area = fields.Integer(
+        string='Total Area',
+        compute='_compute_total_area',
+        required=False)
+    best_price = fields.Float(
+        string='Best Price',
+        compute='_compute_best_price',
+        required=False)
+
+    @api.depends('living_area','garden_area')
+    def _compute_total_area(self):
+        for property in self:
+            property.total_area = property.living_area + property.garden_area
+
+    @api.depends('offer_ids.price') # Dependensi pada field 'price' dari offer_ids
+    def _compute_best_price(self):
+        for property_record in self:
+            prices = property_record.offer_ids.mapped('price')
+            if prices:
+                property_record.best_price = max(prices)
+            else:
+                property_record.best_price = 0.0
+
+    @api.onchange('garden')
+    def _onchange_garden(self):
+        for property in self:
+            if property.garden:
+                property.garden_orientation = 'north'
+                property.garden_area = 10
