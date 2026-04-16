@@ -5,4 +5,5 @@
 
     <!-- This Menu Item Must have a parent -->
     <menuitem id="advertisments_categ" name="Advertisements" parent="real_estate_root" sequence="10"/>
+    <menuitem id="settings" name="Settings" parent="real_estate_root" sequence="20"/>
 </odoo>

@@ -61,3 +61,17 @@ class EstateProperty(models.Model):
                    ('sold', 'Sold'),
                    ('canceled', 'Canceled'),],
         required=True, copy=False, default='new')
+    partner_id = fields.Many2one("res.partner", copy=False, string="Buyer")
+    users_id = fields.Many2one("res.users", string="Salesman", default=lambda self: self.env.user)
+    property_type_id = fields.Many2one(
+        comodel_name='estate.property.type',
+        string='Property Type',
+        required=False)
+    tag_ids = fields.Many2many(
+        comodel_name='estate.property.tag',
+        string='Tags')
+    offer_ids = fields.One2many(
+        comodel_name='estate.property.offer',
+        inverse_name='property_id',
+        string='Offer',
+        required=False)
