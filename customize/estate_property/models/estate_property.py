@@ -168,3 +168,9 @@ class EstateProperty(models.Model):
             elif not record.offer_ids and record.state == 'offer_received':
                 record.state = 'new'
         return res
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_property_new_or_canceled(self):
+        for record in self:
+            if record.state not in ['new','canceled']:
+                raise UserError('Property not new or cancelled.')

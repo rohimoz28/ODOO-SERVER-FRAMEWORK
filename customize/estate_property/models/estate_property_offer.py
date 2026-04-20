@@ -64,8 +64,23 @@ class EstatePropertyOffer(models.Model):
             record.property_id.partner_id = record.partner_id
             record.property_id.selling_price = record.price
             record.status = 'accepted'
-            record.property_id.state = 'offer_accepted'
 
     def act_offer_refused(self):
         for record in self:
             record.status = 'refused'
+
+    @api.model
+    def create(self, vals):
+        property = self.env['estate.property'].browse(vals['property_id'])
+        offers = property.offer_ids.mapped('price')
+
+        for offer in offers:
+            if vals['price'] < offer:
+                raise ValidationError("new offered price must be greater than the best price")
+
+        # mengubah state property untuk offer pertama
+        for prop in property:
+            if len(prop.offer_ids) <= 0:
+                prop.state = 'offer_received'
+
+        return super().create(vals)

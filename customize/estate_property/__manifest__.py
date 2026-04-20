@@ -27,6 +27,7 @@ Tutorial Odoo Server Framework 101 - Official
         'views/estate_property_view.xml',
         'views/estate_property_type_view.xml',
         'views/estate_property_tag_view.xml',
+        'views/res_users_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
