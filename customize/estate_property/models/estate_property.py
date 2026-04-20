@@ -122,14 +122,6 @@ class EstateProperty(models.Model):
             else:
                 property_record.best_price = 0.0
 
-    # @api.depends('offer_ids')
-    # def _compute_offer_state(self):
-    #     for record in self:
-    #         if record.offer_ids:
-    #             record.state = 'offer_received'
-    #         elif not record.offer_ids:
-    #             record.state = 'new'
-
     @api.onchange('garden')
     def _onchange_garden(self):
         for property in self:
@@ -174,3 +166,7 @@ class EstateProperty(models.Model):
         for record in self:
             if record.state not in ['new','canceled']:
                 raise UserError('Property not new or cancelled.')
+
+    def action_print_qweb_report(self):
+        # return True
+        return self.env.ref('estate_property.report_estate_property_details').report_action(self)

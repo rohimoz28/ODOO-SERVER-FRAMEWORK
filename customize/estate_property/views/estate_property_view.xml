@@ -10,6 +10,13 @@
                     <header>
                         <button name="act_btn_sold" type="object" string="Sold" invisible="state in ['sold']" />
                         <button name="act_btn_cancel" type="object" string="Cancel" invisible="state in ['sold']"/>
+                        <button
+                                name="action_print_qweb_report"
+                                string="Print Property"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state not in ['sold']"
+                        />
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -74,7 +81,7 @@
         </record>
 
         <record id="estate_property_tree_view" model="ir.ui.view">
-            <field name="name">tutorial.estate.property.tree</field>
+            <field name="name">estate_property.estate.property.tree</field>
             <field name="model">estate.property</field>
             <field name="arch" type="xml">
                 <tree string="Properties" decoration-success="state in ['offer_received','offer_accepted']"
