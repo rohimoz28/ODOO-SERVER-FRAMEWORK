@@ -5,6 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 class EstatePropertyOffer(models.Model):
     _name = 'estate.property.offer'
     _description = 'Property Offer'
+    _order = "price desc"
 
     name = fields.Char(required=True)
     price = fields.Float(
@@ -31,6 +32,12 @@ class EstatePropertyOffer(models.Model):
         string='Date Deadline',
         inverse='_inverse_date_deadline',
         compute='_compute_date_deadline',
+        required=False)
+    property_type_id = fields.Many2one(
+        comodel_name='estate.property.type',
+        related='property_id.property_type_id',
+        store=True,
+        string='Property Type',
         required=False)
 
     # validasi negative price tidak bisa menggunakan _sql_constrains
@@ -59,7 +66,6 @@ class EstatePropertyOffer(models.Model):
             record.status = 'accepted'
             record.property_id.state = 'offer_accepted'
 
-
     def act_offer_refused(self):
         for record in self:
-            pass
+            record.status = 'refused'

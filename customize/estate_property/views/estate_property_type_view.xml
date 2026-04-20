@@ -8,14 +8,47 @@
             <field name="arch" type="xml">
                 <form string="Property Type">
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" type="object" name="action_view_offers" icon="fa-star">
+                                <field string="Offers" name="offer_count" widget="statinfo"/>
+                            </button>
+                        </div>
                         <div class="oe_title">
                             <label for="name"/>
                             <h1>
                                 <field name="name" placeholder="Property Type"/>
                             </h1>
                         </div>
+                        <group>
+                            <group>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Properties">
+                                <field name="property_ids">
+                                    <tree  editable="bottom">
+                                        <field name="name"/>
+                                        <field name="expected_price"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
+            </field>
+        </record>
+
+        <record id="estate_property_type_tree_view" model="ir.ui.view">
+            <field name="name">estate.property.type.tree</field>
+            <field name="model">estate.property.type</field>
+            <field name="arch" type="xml">
+                <tree string="Property Type">
+                    <field name="name"/>
+                    <field name="sequence" widget="handle"/>
+                    <field name="offer_count"/>
+                </tree>
             </field>
         </record>
 
@@ -23,7 +56,7 @@
             <field name="name">property.type</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">estate.property.type</field>
-            <field name="view_mode">form</field>
+            <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     There is no examples click here to add new Property Type.

@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__) # Inisialisasi logger untuk debugging
 class EstateProperty(models.Model):
     _name = 'estate.property'
     _description = 'Estate Property'
+    _order = "id desc"
 
     name = fields.Char(required=True, string='Title')
     description = fields.Text(
@@ -72,7 +73,7 @@ class EstateProperty(models.Model):
     property_type_id = fields.Many2one(
         comodel_name='estate.property.type',
         string='Property Type',
-        required=False)
+        required=True)
     tag_ids = fields.Many2many(
         comodel_name='estate.property.tag',
         string='Tags')
@@ -88,6 +89,10 @@ class EstateProperty(models.Model):
     best_price = fields.Float(
         string='Best Price',
         compute='_compute_best_price',
+        required=False)
+    active = fields.Boolean(
+        string='Active',
+        default=True,
         required=False)
 
 
@@ -117,6 +122,14 @@ class EstateProperty(models.Model):
             else:
                 property_record.best_price = 0.0
 
+    # @api.depends('offer_ids')
+    # def _compute_offer_state(self):
+    #     for record in self:
+    #         if record.offer_ids:
+    #             record.state = 'offer_received'
+    #         elif not record.offer_ids:
+    #             record.state = 'new'
+
     @api.onchange('garden')
     def _onchange_garden(self):
         for property in self:
@@ -137,3 +150,21 @@ class EstateProperty(models.Model):
                 raise UserError('Property has been sold')
             else:
                 record.state = 'canceled'
+
+    @api.model
+    def create(self, vals):
+        record = super().create(vals)
+        if record.offer_ids:
+            record.state = 'offer_received'
+        else:
+            record.state = 'new'
+        return record
+
+    def write(self, vals):
+        res = super().write(vals)
+        for record in self:
+            if record.offer_ids and record.state == 'new':
+                record.state = 'offer_received'
+            elif not record.offer_ids and record.state == 'offer_received':
+                record.state = 'new'
+        return res

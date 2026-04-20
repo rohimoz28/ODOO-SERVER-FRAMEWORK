@@ -30,7 +30,7 @@ Tutorial Odoo Server Framework 101 - Official
     ],
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        # 'demo/demo.xml',
     ],
     # Gunakan ini supaya modul bisa ditampilkan dengan filter 'Apps'
     'installable': True,
