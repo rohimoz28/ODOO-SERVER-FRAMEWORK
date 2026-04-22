@@ -78,5 +78,23 @@ docker compose exec odoo-demo odoo -c /etc/odoo/odoo.conf -u estate_property -d 
 docker compose exec odoo-demo odoo -c /etc/odoo/odoo.conf -u estate_account -d <db_name> --stop-after-init
 ```
 
+## Testing
+Perubahan terakhir menambahkan comprehensive test suite untuk module `estate_property` serta perbaikan flow state saat create offer pertama.
+
+Komponen yang dicakup test:
+- `estate.property` (constraints, compute, onchange, action button, write/unlink, report action)
+- `estate.property.offer` (price constraint, compute/inverse deadline, accept/refuse action, create rule)
+- `estate.property.tag` (required + unique constraint)
+- `estate.property.type` (unique constraint, compute offer count, action domain)
+
+Jalankan full test module `estate_property`:
+
+```bash
+docker compose exec odoo-demo odoo -c /etc/odoo/odoo.conf -d BELAJAR_ODOO17 -u estate_property --test-enable --test-tags /estate_property --stop-after-init
+```
+
+Catatan:
+- Log `bad query` saat test negatif constraint bisa muncul dan tetap normal selama summary akhir menunjukkan `0 failed, 0 error(s)`.
+
 ## Notes
 Project ini ditujukan untuk pembelajaran lokal. Konfigurasi saat ini bukan baseline untuk environment production.
