@@ -73,14 +73,17 @@ class EstatePropertyOffer(models.Model):
     def create(self, vals):
         property = self.env['estate.property'].browse(vals['property_id'])
         offers = property.offer_ids.mapped('price')
+        is_first_offer = len(property.offer_ids) == 0
 
         for offer in offers:
             if vals['price'] < offer:
                 raise ValidationError("new offered price must be greater than the best price")
 
-        # mengubah state property untuk offer pertama
+        created_offer = super().create(vals)
+
+        # ubah state setelah offer berhasil dibuat
         for prop in property:
-            if len(prop.offer_ids) <= 0:
+            if is_first_offer:
                 prop.state = 'offer_received'
 
-        return super().create(vals)
+        return created_offer

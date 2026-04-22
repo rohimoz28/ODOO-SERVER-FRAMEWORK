@@ -47,7 +47,6 @@ class EstateProperty(models.Model):
         required=False)
     garden = fields.Boolean(
         string='Garden',
-        onchange='_onchange_garden',
         required=False)
     garden_area = fields.Integer(
         string='Garden Area',
